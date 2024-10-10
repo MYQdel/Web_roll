@@ -4,7 +4,10 @@
     <meta charset="UTF-8">  
     <meta name="viewport" content="width=device-width, initial-scale=1.0">  
     <title>学生名单</title>  
-    <link rel="stylesheet" href="styles.css">  
+    <link rel="stylesheet" href="styles.css"> 
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zhi+Mang+Xing&display=swap" rel="stylesheet"> 
     <style>  
         body {  
             text-align: center;  
@@ -13,15 +16,16 @@
 
         /* 将按钮容器放在右上角 */  
         .button-container {  
-            position: absolute;  
+            position: fixed;  
             top: 20px;  
             right: 20px;  
-        }  
+        }
 
         /* 按钮样式 */  
         .button-container button {  
             margin-left: 10px; /* 按钮之间留一点间隔 */  
         }  
+
     </style>  
 </head>  
 <body>  
@@ -54,8 +58,12 @@
                 list.innerHTML += `  
                     <div>  
                         ${student.id} - ${student.name} - 积分: ${student.points}  
-                        <button onclick="clearStudentPoints(${index})">清除积分</button>  
-                        <button onclick="deleteStudent(${index})">删除</button>  
+                        <button onclick="clearStudentPoints(${index})"style="background: none; border: none; padding: 0; cursor: pointer;">
+                            <img src="clear-icon.svg" alt="清除" style="width: 40px; height: 40px;" /> 
+                            </button>  
+                        <button onclick="deleteStudent(${index}) "style="background: none; border: none; padding: 0; cursor: pointer;">
+                            <img src="delete-icon.svg" alt="删除" style="width: 40px; height: 40px;" /> 
+                        </button>
                     </div>`;  
             });  
         }  
