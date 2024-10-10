@@ -4,11 +4,22 @@
     <meta charset="UTF-8">  
     <meta name="viewport" content="width=device-width, initial-scale=1.0">  
     <title>学生名单</title>  
-    <link rel="stylesheet" href="styles.css"> 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Zhi+Mang+Xing&display=swap" rel="stylesheet"> 
+    <link rel="stylesheet" href="styles.css">   
+    <link rel="preconnect" href="https://fonts.googleapis.com">  
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>  
+    <link href="https://fonts.googleapis.com/css2?family=Zhi+Mang+Xing&display=swap" rel="stylesheet">   
     <style>  
+        .tooltip {  
+            display: none;  
+            position: absolute;  
+            background-color: #555;  
+            color: #fff;  
+            text-align: center;  
+            border-radius: 5px;  
+            padding: 5px;  
+            z-index: 1;  
+        }  
+
         body {  
             text-align: center;  
             position: relative; /* 为绝对定位的子元素提供基准 */  
@@ -19,7 +30,7 @@
             position: fixed;  
             top: 20px;  
             right: 20px;  
-        }
+        }  
 
         /* 按钮样式 */  
         .button-container button {  
@@ -37,11 +48,26 @@
         <button onclick="goBack()">返回</button>  
     </div>  
 
+    <div class="tooltip" id="tooltip"></div>
+    
+    <div id="message" style="display:none; position:fixed; top:20px; left:50%; transform:translateX(-50%); background-color:rgba(0, 0, 0, 0.5); color:white; padding:10px; border-radius:5px; white-space:nowrap;">  
+    </div>
+
     <script>  
         // 返回上一页  
         function goBack() {  
             window.history.back();  
         }  
+
+        function showMessage(text) {  
+            const messageDiv = document.getElementById("message");  
+            messageDiv.textContent = text;  
+            messageDiv.style.display = "block"; // 显示消息  
+
+            setTimeout(() => {  
+                messageDiv.style.display = "none"; // 1秒后隐藏消息  
+            }, 1000);  
+        }
 
         // 加载学生名单  
         function loadStudentList() {  
@@ -58,13 +84,38 @@
                 list.innerHTML += `  
                     <div>  
                         ${student.id} - ${student.name} - 积分: ${student.points}  
-                        <button onclick="clearStudentPoints(${index})"style="background: none; border: none; padding: 0; cursor: pointer;">
+                        <button 
+                            data-tooltip="清除积分"
+                            onclick="clearStudentPoints(${index})"style="background: none; border: none; padding: 0; cursor: pointer;">
                             <img src="clear-icon.svg" alt="清除" style="width: 40px; height: 40px;" /> 
                             </button>  
-                        <button onclick="deleteStudent(${index}) "style="background: none; border: none; padding: 0; cursor: pointer;">
+                        <button 
+                            data-tooltip="删除学生"
+                            onclick="deleteStudent(${index}) "style="background: none; border: none; padding: 0; cursor: pointer;">
                             <img src="delete-icon.svg" alt="删除" style="width: 40px; height: 40px;" /> 
                         </button>
                     </div>`;  
+            });
+
+            // 注册工具提示事件  
+            registerTooltipEvents();  
+        }  
+
+        function registerTooltipEvents() {  
+            const buttons = document.querySelectorAll('button[data-tooltip]');  
+            const tooltip = document.getElementById('tooltip');  
+
+            buttons.forEach(button => {  
+                button.addEventListener('mouseenter', function(event) {  
+                    tooltip.textContent = button.getAttribute('data-tooltip');  
+                    tooltip.style.display = 'block';  
+                    tooltip.style.left = event.pageX + 'px';  
+                    tooltip.style.top = (event.pageY + 20) + 'px'; // 鼠标下方略微偏移  
+                });  
+
+                button.addEventListener('mouseleave', function() {  
+                    tooltip.style.display = 'none';  
+                });  
             });  
         }  
 
@@ -74,7 +125,7 @@
             students[index].points = 0; // 清除该学生的积分  
             localStorage.setItem('students', JSON.stringify(students)); // 更新本地存储  
             loadStudentList(); // 重新加载学生列表  
-            alert("已清除该学生积分。");  
+            showMessage("已清除该学生积分。");  
         }  
 
         // 删除单个学生  
@@ -83,7 +134,7 @@
             students.splice(index, 1); // 删除该学生  
             localStorage.setItem('students', JSON.stringify(students)); // 更新本地存储  
             loadStudentList(); // 重新加载学生列表  
-            alert("已删除该学生。");  
+            showMessage("已删除该学生。");  
         }                                                                               
 
         // 一键清除所有学生的积分  
@@ -92,7 +143,7 @@
             students.forEach(student => student.points = 0); // 清除所有学生的积分  
             localStorage.setItem('students', JSON.stringify(students)); // 更新本地存储  
             loadStudentList(); // 重新加载学生列表  
-            alert("所有学生的积分已清除。");  
+            showMessage("所有学生的积分已清除。");  
         }  
 
         window.onload = loadStudentList; // 页面加载时调用  
