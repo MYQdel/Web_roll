@@ -165,6 +165,7 @@ input[type="text"] {
 }  
 
 .file-upload {  
+    font-size: 25px;
     display: flex;  
     justify-content: flex-end;  
     align-items: center;  
